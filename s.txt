@@ -1,0 +1,5 @@
+php artisan krlove:generate:model Broadcast --output-path=/var/www/html/broadcast/app/Models
+
+php artisan krlove:generate:model BroadcastViewer --output-path=/var/www/html/broadcast/app/Models
+
+php artisan make:migration create_broadcasts_table
