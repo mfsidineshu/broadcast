@@ -18,6 +18,7 @@
         .navbar-laravel
         {
             box-shadow: 0 2px 4px rgba(0,0,0,.04);
+            background: yellowgreen;
         }
         .navbar-brand , .nav-link, .my-form, .login-form
         {
@@ -44,6 +45,8 @@
             margin-right: 0;
         }
     </style>
+
+    @stack('styles')
 </head>
 <body>
 
@@ -75,6 +78,9 @@
 </nav>
 
 @yield('content')
+
+@stack('scripts')
+
 
 </body>
 </html>

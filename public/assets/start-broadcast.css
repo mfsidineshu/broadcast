@@ -1,0 +1,65 @@
+body {
+    margin: 0 auto;
+    background: black;
+    color: wheat;
+    text-align: center;
+}
+button.togglers {
+    border: none;
+    background: black;
+    color: red;
+    /* border: 1x solid whitesmoke; */
+    padding: 0.8em 1.5em 0.8em 1.5em;
+    font-size: 1.2em;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    /* border: 1px solid red; */
+    border-radius: 0.4em;
+    transition: all 0.2s linear;
+}
+
+button.play {
+    background: green;
+    color: whitesmoke;
+}
+
+button.stop {
+    background: red;
+    color: wheat;
+}
+
+.broadcastInfo ul {
+    margin: 0 auto 0 auto;
+    width: 90%;
+}
+
+.broadcastInfo ul li {
+    list-style-type: none;
+    padding: 0.8em;
+    display: inline-block;
+    margin: 0.5em;
+    background: wheat;
+    color: red;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+}
+
+.content {
+    position: fixed;
+    bottom: 10%;
+    background: rgba(0, 0, 0, 0.5);
+
+    width: 100%;
+    padding: 20px;
+}
