@@ -50,23 +50,59 @@ class BroadcastController extends Controller
         $this->hlsMasterPlaylist = "{$this->hlsChunkFilesPath}/{$this->folderName}.m3u8";
 
 
-        if(!File::exists( storage_path().'/'. $this->destinationDirectory)){
-            Storage::disk('local')->makeDirectory( $this->destinationDirectory );
 
+        if ($this->order == "0") {
+
+            if(!File::exists( storage_path().'/'. $this->destinationDirectory)){
+                Storage::disk('local')->makeDirectory( $this->destinationDirectory );
+                Storage::disk('local')->makeDirectory( $this->hlsChunkFilesPath );
+
+            }
+
+
+            // Storage::put($this->liveFilePath,'');
         }
 
-        $out = fopen( storage_path($this->liveFilePath) , $this->order == 0 ? "wb" : "ab");
+        $this->addOrAppendLiveVideo();
 
-        if (!$out) {
-            $this->sendResponse();
+        if ($this->order == "0") {
+            $this->createMasterHlsPlaylist();
+            $this->runFfmpegCommand();
         }
-
-        fwrite($out, $this->binarydata);
-        fclose($out);
 
         $this->sendResponse(true, "Chunk appended", [
             "folder"  => $this->folderName
         ]);
+    }
+
+    public function addOrAppendLiveVideo(){
+        $out = fopen( storage_path('app/'.$this->liveFilePath) , $this->order == 0 ? "wb" : "ab");
+        if (!$out) {
+            $this->sendResponse();
+        }
+        fwrite($out, $this->binarydata);
+        fclose($out);
+    }
+
+
+    public function createMasterHlsPlaylist()
+    {
+
+
+                $masterPLaylistContent = "#EXTM3U
+        #EXT-X-VERSION:3
+        #EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=640x360
+        360p.m3u8
+        #EXT-X-STREAM-INF:BANDWIDTH=1400000,RESOLUTION=842x480
+        480p.m3u8
+        #EXT-X-STREAM-INF:BANDWIDTH=2800000,RESOLUTION=1280x720
+        720p.m3u8
+        #EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=1920x1080
+        1080p.m3u8";
+
+
+        Storage::put( $this->hlsMasterPlaylist,$masterPLaylistContent);
+
     }
 
     public function getBroadcastId(){
@@ -77,16 +113,37 @@ class BroadcastController extends Controller
         return $broadcast->broadcast_id;
     }
 
-    public function generateRandomString($length = 10)
+
+
+    public function runFfmpegCommand()
     {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
-        }
-        return $randomString;
+
+        $destinationFullPath = storage_path('app/'.$this->liveFilePath);
+        $hlsDirectoryFullPath = storage_path('app/'.$this->hlsChunkFilesPath);
+
+        $cmd = "ffmpeg -stream_loop -10 -hide_banner -nostdin -y -i {$destinationFullPath}  -vf scale=w=640:h=360:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4  -hls_playlist_type event -b:v 800k -maxrate 856k -bufsize 1200k -b:a 96k -hls_segment_filename {$hlsDirectoryFullPath}/360p_%03d.ts {$hlsDirectoryFullPath}/360p.m3u8  -vf scale=w=842:h=480:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4 -hls_playlist_type event -b:v 1400k -maxrate 1498k -bufsize 2100k -b:a 128k -hls_segment_filename {$hlsDirectoryFullPath}/480p_%03d.ts {$hlsDirectoryFullPath}/480p.m3u8  -vf scale=w=1280:h=720:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4 -hls_playlist_type event -b:v 2800k -maxrate 2996k -bufsize 4200k -b:a 128k -hls_segment_filename {$hlsDirectoryFullPath}/720p_%03d.ts {$hlsDirectoryFullPath}/720p.m3u8 -vf scale=w=1920:h=1080:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4 -hls_playlist_type event -b:v 5000k -maxrate 5350k -bufsize 7500k -b:a 192k -hls_segment_filename {$hlsDirectoryFullPath}/1080p_%03d.ts {$hlsDirectoryFullPath}/1080p.m3u8 ";
+
+
+        $this->runCom($cmd);
+
+        $this->sendResponse(true, "First chunk, so ffmpeg process will be created in the background", [
+            // "processId" => $this->pid,
+            "command"  => $cmd,
+            "folder"  => $this->folderName
+        ]);
+
+
+
+        $this->sendResponse();
     }
+
+    private function runCom($cmd)
+    {
+        $command = 'nohup ' . $cmd . ' </dev/null >/dev/null 2>/var/www/html/ffmpeg.log & echo $!';
+        exec($command, $op);
+        $this->pid = (int)$op[0];
+    }
+
 
     public function sendResponse($status = false, $message = "There was an error", $data = [])
     {
