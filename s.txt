@@ -3,3 +3,7 @@ php artisan krlove:generate:model Broadcast --output-path=/var/www/html/broadcas
 php artisan krlove:generate:model BroadcastViewer --output-path=/var/www/html/broadcast/app/Models
 
 php artisan make:migration create_broadcasts_table
+
+
+chmod 755 /var/www/html/broadcast/storage/app/broadcast-videos
+chown -R www-data:www-data /var/www/html/broadcast/storage/app/broadcast-videos

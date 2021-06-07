@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Broadcast;
+use App\Http\Controllers\BroadcastController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,5 +24,5 @@ Route::post('post-registration', [AuthController::class, 'postRegistration'])->n
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('dashboard', [AuthController::class, 'dashboard'])->middleware('auth');
-Route::get('start-broadcast', [Broadcast::class, 'broadcastPage'])->middleware('auth');
-Route::post('save-chunks', [Broadcast::class, 'saveStreamToAFile'])->middleware('auth');;
+Route::get('start-broadcast', [BroadcastController::class, 'broadcastPage'])->middleware('auth');
+Route::post('save-chunks', [BroadcastController::class, 'saveStreamToAFile'])->middleware('auth');;

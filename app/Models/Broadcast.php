@@ -16,10 +16,12 @@ class Broadcast extends Model
 {
     /**
      * The primary key for the model.
-     * 
+     *
      * @var string
      */
     protected $primaryKey = 'broadcast_id';
+
+    public $timestamps = false;
 
     /**
      * @var array
