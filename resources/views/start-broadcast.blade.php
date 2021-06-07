@@ -1,12 +1,15 @@
 @extends('layout')
 
 @push('styles')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('assets/start-broadcast.css') }}" />
 
 @endpush
 
 @section('content')
-    <video autoplay playsinline muted id="broadcastVideo"></video>
+{{ csrf_field() }}
+
+<video autoplay playsinline muted id="broadcastVideo"></video>
     <div class="content">
 
         <div>

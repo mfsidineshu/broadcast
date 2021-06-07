@@ -65,11 +65,11 @@ class Broadcast {
           let arrayBuffer = reader.result;
           let uint8View = new Uint8Array(arrayBuffer);
           this.makeApiRequest(uint8View).then(data =>{
-         
+
             this.folder = data["data"]["folder"];
             this.broadcastLink.setAttribute("href","./view-broadcast.php?folder="+this.folder);
 
-            
+
           });
           this.order += 1;
         };
@@ -82,12 +82,15 @@ class Broadcast {
 
   async makeApiRequest(uint8View) {
 
-    const response = await fetch("api-save-broadcast.php", {
+    const response = await fetch("/save-chunks", {
       method: "POST",
+      headers : {
+        'X-CSRF-TOKEN' : document.querySelector("input[name='_token']").value
+      },
       body: JSON.stringify({
         chunk: uint8View,
         order: this.order,
-        folder: this.folder,
+        folder: this.folder
       }),
     });
 

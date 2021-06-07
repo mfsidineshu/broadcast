@@ -12,11 +12,12 @@ class Broadcast extends Controller
 
     public function broadcastPage()
     {
-        if(Auth::check()){
-            return view('start-broadcast');
-        }
+        return view('start-broadcast');
 
-        return redirect("login")->withSuccess('Opps! You do not have access');
+    }
+
+    public function saveStreamToAFile(Request $request){
+        exit("a");
     }
 
 }
