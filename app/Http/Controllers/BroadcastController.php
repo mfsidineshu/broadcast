@@ -55,7 +55,7 @@ class BroadcastController extends Controller
             $this->folderName =  $this->getBroadcastId();
         }
         else{
-            $this->decryptAndGetFolder();
+            $this->decryptAndCheckFolder();
         }
 
         $this->destinationDirectory = "{$this->videosStorageDir}/{$this->folderName}";
@@ -97,22 +97,30 @@ class BroadcastController extends Controller
                 $this->folderName = Crypt::decrypt($this->requestData["folder"]);
 
                 if(!File::exists( storage_path().'/'. $this->liveFilePath)){
-                    $this->sendResponse(false,"Invalid request");
+                    $this->sendResponse(false,"Invalid request [12]");
                 }
 
-                $broadcast = Broadcast::where([
+
+                $query = Broadcast::query();
+
+                $query->where([
                     [ "broadcast_id", $this->folderName ],
                     ["user_id" , Auth::id() ]
-                ])->whereNotNull('ended_on')->first();
+                ])->first();
+
+                $query->whereNull('ended_on');
+
+                $broadcast = $query->first();
 
                 if(!$broadcast || is_null($broadcast)){
-                    $this->sendResponse(false,"Invalid request");
+                    $this->sendResponse(false,"Invalid request [13]");
 
                 }
 
 
             } catch (Exception $e) {
-                $this->sendResponse(false,"Invalid request");
+                // var_dump($e);
+                $this->sendResponse(false,"Invalid request [16]");
             }
 
 

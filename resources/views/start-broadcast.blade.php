@@ -32,7 +32,7 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('assets/RecordRTC.js') }}"></script>
+    {{-- <script src="{{ asset('assets/RecordRTC.js') }}"></script> --}}
     <script src="{{ asset('assets/start-broadcast.js') }}"></script>
 
 @endpush

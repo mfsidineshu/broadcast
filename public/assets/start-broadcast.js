@@ -27,7 +27,7 @@ class Broadcast {
 
       this.broadcastInfo.style.display = "none";
 
-      this.recorder.stopRecording();
+      this.recorder.stop();
       this.video.src = this.video.srcObject = null;
 
     };
@@ -54,13 +54,16 @@ class Broadcast {
   startRecording(camera) {
     this.video.srcObject = camera;
 
-    this.recorder = RecordRTC(camera, {
-      recorderType: MediaStreamRecorder,
-      mimeType: "video/webm",
-      timeSlice: 1000,
-      ondataavailable: (blob) => {
+    this.recorder = new MediaRecorder(camera,{
+        mimeType: 'video/webm'
+    });
+
+    this.recorder.ondataavailable = (blobData) =>{
+        if(!blobData.data.size > 0){
+            return;
+        }
         var reader = new FileReader();
-        reader.readAsArrayBuffer(blob);
+        reader.readAsArrayBuffer(blobData.data);
         reader.onloadend = async (event) => {
           let arrayBuffer = reader.result;
           let uint8View = new Uint8Array(arrayBuffer);
@@ -73,14 +76,48 @@ class Broadcast {
           });
           this.order += 1;
         };
-      },
-    });
+    };
 
-    this.recorder.startRecording();
-    this.recorder.camera = camera;
+    // this.recorder = RecordRTC(camera, {
+    //   recorderType: MediaStreamRecorder,
+    //   mimeType: "video/webm",
+    //   timeSlice: 1000,
+
+    //   ondataavailable: (blob) => {
+    //     var reader = new FileReader();
+    //     reader.readAsArrayBuffer(blob);
+    //     reader.onloadend = async (event) => {
+    //       let arrayBuffer = reader.result;
+    //       let uint8View = new Uint8Array(arrayBuffer);
+    //       this.makeApiRequest(uint8View).then(data =>{
+
+    //         this.folder = data["data"]["folder"];
+    //         this.broadcastLink.setAttribute("href","./view-broadcast.php?folder="+this.folder);
+
+
+    //       });
+    //       this.order += 1;
+    //     };
+    //   },
+
+
+    // });
+
+    // this.recorder.startRecording();
+    this.recorder.start(1000);
+
+    // this.recorder.camera = camera;
   }
 
   async makeApiRequest(uint8View) {
+
+
+    console.log({
+        chunk: uint8View,
+        order: this.order,
+        folder: this.folder
+      });
+
 
     const response = await fetch("/save-chunks", {
       method: "POST",
