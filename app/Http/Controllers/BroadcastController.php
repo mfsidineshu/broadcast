@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
 use App\Broadcast;
+use Exception;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Crypt;
 
 class BroadcastController extends Controller
 {
@@ -35,6 +37,13 @@ class BroadcastController extends Controller
 
     }
 
+    public function watchBroadcastPage(){
+
+
+        return view('watch-broadcast');
+
+    }
+
     public function saveStreamToAFile(Request $request){
 
         $this->requestData = json_decode(file_get_contents("php://input"), true);
@@ -42,7 +51,12 @@ class BroadcastController extends Controller
         $this->order = $this->requestData['order'];
         $this->binarydata = pack("C*", ...$this->chunk);
 
-        $this->folderName = $this->order == 0 ? $this->getBroadcastId() : $this->requestData['folder'];
+        if($this->order == 0){
+            $this->folderName =  $this->getBroadcastId();
+        }
+        else{
+            $this->decryptAndGetFolder();
+        }
 
         $this->destinationDirectory = "{$this->videosStorageDir}/{$this->folderName}";
         $this->liveFilePath = "{$this->destinationDirectory}/{$this->folderName}.webm";
@@ -71,9 +85,39 @@ class BroadcastController extends Controller
         }
 
         $this->sendResponse(true, "Chunk appended", [
-            "folder"  => $this->folderName
+            "folder"  => Crypt::encrypt($this->folderName)
         ]);
     }
+
+
+    public function decryptAndCheckFolder(){
+
+
+            try {
+                $this->folderName = Crypt::decrypt($this->requestData["folder"]);
+
+                if(!File::exists( storage_path().'/'. $this->liveFilePath)){
+                    $this->sendResponse(false,"Invalid request");
+                }
+
+                $broadcast = Broadcast::where([
+                    [ "broadcast_id", $this->folderName ],
+                    ["user_id" , Auth::id() ]
+                ])->whereNotNull('ended_on')->first();
+
+                if(!$broadcast || is_null($broadcast)){
+                    $this->sendResponse(false,"Invalid request");
+
+                }
+
+
+            } catch (Exception $e) {
+                $this->sendResponse(false,"Invalid request");
+            }
+
+
+    }
+
 
     public function addOrAppendLiveVideo(){
         $out = fopen( storage_path('app/'.$this->liveFilePath) , $this->order == 0 ? "wb" : "ab");
@@ -90,15 +134,15 @@ class BroadcastController extends Controller
 
 
                 $masterPLaylistContent = "#EXTM3U
-        #EXT-X-VERSION:3
-        #EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=640x360
-        360p.m3u8
-        #EXT-X-STREAM-INF:BANDWIDTH=1400000,RESOLUTION=842x480
-        480p.m3u8
-        #EXT-X-STREAM-INF:BANDWIDTH=2800000,RESOLUTION=1280x720
-        720p.m3u8
-        #EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=1920x1080
-        1080p.m3u8";
+#EXT-X-VERSION:3
+#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=640x360
+360p.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=1400000,RESOLUTION=842x480
+480p.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=2800000,RESOLUTION=1280x720
+720p.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=1920x1080
+1080p.m3u8";
 
 
         Storage::put( $this->hlsMasterPlaylist,$masterPLaylistContent);
@@ -126,10 +170,10 @@ class BroadcastController extends Controller
 
         $this->runCom($cmd);
 
-        $this->sendResponse(true, "First chunk, so ffmpeg process will be created in the background", [
+        $this->sendResponse(true, "Created broadcast", [
             // "processId" => $this->pid,
-            "command"  => $cmd,
-            "folder"  => $this->folderName
+            // "command"  => $cmd,
+            "folder"  => Crypt::encrypt($this->folderName)
         ]);
 
 

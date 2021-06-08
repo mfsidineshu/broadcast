@@ -26,3 +26,5 @@ Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('dashboard', [AuthController::class, 'dashboard'])->middleware('auth');
 Route::get('start-broadcast', [BroadcastController::class, 'broadcastPage'])->middleware('auth');
 Route::post('save-chunks', [BroadcastController::class, 'saveStreamToAFile'])->middleware('auth');;
+
+Route::get('watch-broadcast', [BroadcastController::class, 'watchBroadcastPage'])->middleware('auth');
