@@ -1,0 +1,86 @@
+
+div.shareOverlay {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    width: 100%;
+    margin: 0 auto 0 auto;
+    z-index: 30;
+    position: fixed;
+    background: none;
+    color: wheat;
+    height: 0;
+    top: 0;
+    left: 0;
+}
+
+div.shareOverlay.active {
+    height: 100%;
+}
+
+div.shareOverlay div.shareContainer {
+    text-align: center;
+    padding: 1em 0 1em;
+    margin: 0 auto 0 auto;
+    width: 94%;
+    background-color: black;
+    border: 5px solid wheat;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+
+div.shareOverlay.active div.shareContainer {
+    animation-name: suddenShow;
+    animation-duration: 0.2s;
+}
+
+@keyframes suddenShow {
+    from {
+        transform: scale(0.2, 0.2);
+    }
+    to {
+        transform: scale(1, 1);
+    }
+}
+
+div.shareContainer div.closeShare {
+    text-align: right;
+    cursor: pointer;
+}
+
+div.shareContainer div.closeShare svg {
+    margin-right: 1em;
+}
+
+div.shareContainer a {
+    display: inline-block;
+    margin: 1em;
+    text-decoration: none;
+}
+
+div.shareContainer svg {
+    width: 2em !important;
+    height: 2em !important;
+    fill: wheat;
+}
+
+div.shareContainer svg path {
+    fill: wheat;
+}
+
+div.shareContainer svg:hover {
+    transform: scale(1.2, 1.2);
+    transition: all 0.2s linear;
+}
+
+div.shareContainer input {
+    margin: 0.2em auto 0.2em auto;
+    width: 90%;
+    padding: 1em 0 1em;
+    text-align: center;
+    border: none;
+    outline: none;
+    color: black;
+    background: white;
+    border-radius: 2px;
+}

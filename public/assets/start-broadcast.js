@@ -1,36 +1,58 @@
 class Broadcast {
   constructor() {
-    this.broadcastToggler = document.getElementById("broadcastToggle");
-    this.broadcastInfo = document.querySelector("div.broadcastInfo");
+    this.broadcastStart = document.getElementById("start");
+    this.broadcastStop = document.getElementById("stop");
+
+    this.broadcastInfo = document.querySelector("section.broadcastInfo");
     this.broadcastLink = document.getElementById("broadcastLink");
+
     this.video = document.getElementById("broadcastVideo");
     this.recorder = null;
     this.order = 0;
     this.folder = null;
 
 
+    this.shareBroadcast = document.getElementById("shareBroadcast");
+
+    this.shareOverlay =  document.querySelector("div.shareOverlay");
+    this.closeShareOverlay =  document.querySelector("div.closeShare");
+
+
   }
 
   init() {
-    this.broadcastToggler.onclick = (e) => {
-      if (e.target.classList.contains("play")) {
-        e.target.classList.remove("play");
-        e.target.classList.add("stop");
-        e.target.innerHTML = "STOP BROADCAST";
+
+    this.broadcastStart.onclick = (e) => {
+        this.broadcastStart.style.display = "none";
+        this.broadcastInfo.style.display = "inline";
         this.captureCamera();
         return;
-      }
-
-      e.target.classList.add("play");
-      e.target.classList.remove("stop");
-      e.target.innerHTML = "START BROADCAST";
-
-      this.broadcastInfo.style.display = "none";
-
-      this.recorder.stop();
-      this.video.src = this.video.srcObject = null;
-
     };
+
+    this.broadcastStop.onclick = (e) => {
+        this.recorder.stop();
+        this.broadcastInfo.style.display = "none";
+        this.broadcastStart.style.display = "inline";
+        this.video.src = this.video.srcObject = null;
+    }
+
+    this.shareBroadcast.onclick = (e) => {
+        this.shareOverlay.classList.add("active");
+
+    }
+
+    this.closeShareOverlay.onclick = (e) =>{
+        this.shareOverlay.classList.remove("active");
+    }
+
+    document.querySelectorAll(".copy").forEach((ele) => {
+        ele.onclick = (e) => {
+            e.preventDefault();
+            this.copyToClipboard(this.broadcastLink.getAttribute("data-server-addr") + '/' +this.folder);
+
+        }
+    });
+
   }
   captureCamera() {
     this.order = 0;
@@ -70,8 +92,8 @@ class Broadcast {
           this.makeApiRequest(uint8View).then(data =>{
 
             this.folder = data["data"]["folder"];
-            this.broadcastLink.setAttribute("href","./view-broadcast.php?folder="+this.folder);
-
+            // this.broadcastLink.setAttribute("href","./view-broadcast.php?folder="+this.folder);
+            this.broadcastLink.value =  this.broadcastLink.getAttribute("data-server-addr") + '/' +this.folder;
 
           });
           this.order += 1;
@@ -112,12 +134,6 @@ class Broadcast {
   async makeApiRequest(uint8View) {
 
 
-    console.log({
-        chunk: uint8View,
-        order: this.order,
-        folder: this.folder
-      });
-
 
     const response = await fetch("/save-chunks", {
       method: "POST",
@@ -136,6 +152,26 @@ class Broadcast {
 
 
   }
+
+  copyToClipboard(str) {
+    const el = document.createElement('textarea');
+    el.value = str;
+    el.setAttribute('readonly', '');
+    el.style.position = 'absolute';
+    el.style.left = '-9999px';
+    document.body.appendChild(el);
+    const selected =
+        document.getSelection().rangeCount > 0 ?
+        document.getSelection().getRangeAt(0) :
+        false;
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    if (selected) {
+        document.getSelection().removeAllRanges();
+        document.getSelection().addRange(selected);
+    }
+}
 
 
 

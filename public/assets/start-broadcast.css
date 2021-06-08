@@ -6,11 +6,11 @@ body {
 }
 button.togglers {
     border: none;
-    background: black;
-    color: red;
+    background: skyblue;
+    color: black;
     /* border: 1x solid whitesmoke; */
     padding: 0.8em 1.5em 0.8em 1.5em;
-    font-size: 1.2em;
+    font-size: 0.9em;
     letter-spacing: 0.1em;
     cursor: pointer;
     /* border: 1px solid red; */
