@@ -16,6 +16,16 @@
 
                     You are Logged In
                 </div>
+
+                <div class="card-body">
+                    @if (session('danger'))
+                        <div class="alert alert-danger" role="alert">
+                            {{ session('danger') }}
+                        </div>
+                    @endif
+
+                    You are Logged In
+                </div>
             </div>
         </div>
     </div>

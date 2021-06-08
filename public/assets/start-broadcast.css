@@ -16,8 +16,14 @@ button.togglers {
     /* border: 1px solid red; */
     border-radius: 0.4em;
     transition: all 0.2s linear;
+
 }
 
+button.togglers:hover{
+    transform: scale(1.1 , 1.1);
+    transition: all 0.2s linear;
+
+}
 button.play {
     background: green;
     color: whitesmoke;

@@ -1,4 +1,9 @@
 
+.responsive600 {
+    margin: 0 auto 0 auto;
+    width: 600px;
+}
+
 div.shareOverlay {
     display: grid;
     align-items: center;
@@ -83,4 +88,13 @@ div.shareContainer input {
     color: black;
     background: white;
     border-radius: 2px;
+}
+
+
+
+@media (max-width:1020px) {
+    .responsive600 {
+        width: 98%;
+    }
+
 }

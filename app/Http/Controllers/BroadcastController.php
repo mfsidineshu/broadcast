@@ -37,11 +37,58 @@ class BroadcastController extends Controller
 
     }
 
-    public function watchBroadcastPage(){
+    public function watchBroadcastPage(Request $request , $folder){
+
+        try {
 
 
-        return view('watch-broadcast');
+            $req = [
+                "enc-folder" => $folder ,
+                "dec"  => Crypt::decrypt($folder)
 
+            ];
+
+            $this->folderName = $req["dec"];
+
+            $this->setUpDirStructure();
+
+            // exit(Crypt::decrypt($folder));
+            // exit( storage_path().'/app/'. $this->liveFilePath );
+
+
+            if(!File::exists( storage_path().'/app/'. $this->liveFilePath)){
+                return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[1]");
+            }
+
+            $query = Broadcast::query();
+            $query->where([
+                [ "broadcast_id", $this->folderName ]
+            ])->first();
+
+            // $query->whereNull('ended_on');
+
+            $broadcast = $query->first();
+
+            if(!$broadcast || is_null($broadcast)){
+                return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[2]");
+            }
+
+            return view('watch-broadcast')->with('folder', $folder);
+
+
+        } catch (Exception $e) {
+            dd($e);
+            // return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[3]");
+        }
+
+
+    }
+
+    public function setUpDirStructure(){
+        $this->destinationDirectory = "{$this->videosStorageDir}/{$this->folderName}";
+        $this->liveFilePath = "{$this->destinationDirectory}/{$this->folderName}.webm";
+        $this->hlsChunkFilesPath = "{$this->destinationDirectory}/hls";
+        $this->hlsMasterPlaylist = "{$this->hlsChunkFilesPath}/{$this->folderName}.m3u8";
     }
 
     public function saveStreamToAFile(Request $request){
@@ -58,12 +105,9 @@ class BroadcastController extends Controller
             $this->decryptAndCheckFolder();
         }
 
-        $this->destinationDirectory = "{$this->videosStorageDir}/{$this->folderName}";
-        $this->liveFilePath = "{$this->destinationDirectory}/{$this->folderName}.webm";
-        $this->hlsChunkFilesPath = "{$this->destinationDirectory}/hls";
-        $this->hlsMasterPlaylist = "{$this->hlsChunkFilesPath}/{$this->folderName}.m3u8";
 
 
+        $this->setUpDirStructure();
 
         if ($this->order == "0") {
 
@@ -84,8 +128,12 @@ class BroadcastController extends Controller
             $this->runFfmpegCommand();
         }
 
+        $enc = Crypt::encrypt($this->folderName);
+        $dec = Crypt::decrypt($enc);
+
         $this->sendResponse(true, "Chunk appended", [
-            "folder"  => Crypt::encrypt($this->folderName)
+            "folder"  =>  $enc,
+            "dec"  =>  $dec
         ]);
     }
 
@@ -178,10 +226,14 @@ class BroadcastController extends Controller
 
         $this->runCom($cmd);
 
+        $enc = Crypt::encrypt($this->folderName);
+        $dec = Crypt::decrypt($enc);
+
         $this->sendResponse(true, "Created broadcast", [
             // "processId" => $this->pid,
             // "command"  => $cmd,
-            "folder"  => Crypt::encrypt($this->folderName)
+            "folder"  =>  $enc,
+            "dec"  =>  $dec
         ]);
 
 
