@@ -11,7 +11,7 @@
     <div class="video-container">
         <video id="broadcastedVideo" class="video-js vjs-fluid vjs-16-9"  controls preload="auto"
             data-setup="{}">
-            <source type="application/x-mpegURL" src="stream-broadcast/{{ $folder }}.m3u8">
+            <source type="application/x-mpegURL" src="/stream-broadcast/{{ $folder }}/master.m3u8">
 
         </video>
     </div>

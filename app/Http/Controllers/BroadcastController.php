@@ -77,8 +77,8 @@ class BroadcastController extends Controller
 
 
         } catch (Exception $e) {
-            dd($e);
-            // return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[3]");
+            // dd($e);
+            return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[3]");
         }
 
 
@@ -248,6 +248,92 @@ class BroadcastController extends Controller
         $this->pid = (int)$op[0];
     }
 
+
+    public function fetchPlayLists(Request $request , $folder , $bitRate){
+
+        try {
+
+
+            // exit("a");
+            $req = [
+                "enc-folder" => $folder ,
+                "dec"  => Crypt::decrypt($folder)
+
+            ];
+
+            $this->folderName = $req["dec"];
+
+            $this->setUpDirStructure();
+
+            $bitRate = $bitRate == 'master' ? $this->folderName : $bitRate ;
+
+            if(!File::exists( storage_path().'/app/'. "{$this->hlsChunkFilesPath}/{$bitRate}.m3u8")){
+                return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[1]");
+            }
+
+            $query = Broadcast::query();
+            $query->where([
+                [ "broadcast_id", $this->folderName ]
+            ])->first();
+
+            // $query->whereNull('ended_on');
+
+            $broadcast = $query->first();
+
+            if(!$broadcast || is_null($broadcast)){
+                return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[2]");
+            }
+
+            return Storage::download("{$this->hlsChunkFilesPath}/{$bitRate}.m3u8");
+
+
+        } catch (Exception $e) {
+            dd($e);
+
+            // return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[3]");
+        }
+    }
+
+    public function fetchSegments(Request $request , $folder , $fragment){
+
+        try {
+
+            $req = [
+                "enc-folder" => $folder ,
+                "dec"  => Crypt::decrypt($folder)
+
+            ];
+
+            $this->folderName = $req["dec"];
+
+
+            $this->setUpDirStructure();
+
+            if(!File::exists( storage_path().'/app/'. "{$this->hlsChunkFilesPath}/{$fragment}.ts")){
+                return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[1]");
+            }
+
+            $query = Broadcast::query();
+            $query->where([
+                [ "broadcast_id", $this->folderName ]
+            ])->first();
+
+            // $query->whereNull('ended_on');
+
+            $broadcast = $query->first();
+
+            if(!$broadcast || is_null($broadcast)){
+                return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[2]");
+            }
+
+            return Storage::download("{$this->hlsChunkFilesPath}/{$fragment}.ts");
+
+
+        } catch (Exception $e) {
+            // dd($e);
+            return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[3]");
+        }
+    }
 
     public function sendResponse($status = false, $message = "There was an error", $data = [])
     {

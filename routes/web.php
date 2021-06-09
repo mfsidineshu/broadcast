@@ -28,3 +28,5 @@ Route::get('start-broadcast', [BroadcastController::class, 'broadcastPage'])->mi
 Route::post('save-chunks', [BroadcastController::class, 'saveStreamToAFile'])->middleware('auth');;
 
 Route::get('watch-broadcast/{folder}', [BroadcastController::class, 'watchBroadcastPage'])->middleware('auth');
+Route::get('stream-broadcast/{folder}/{bitRate}.m3u8', [BroadcastController::class, 'fetchPlayLists'])->middleware('auth');
+Route::get('stream-broadcast/{folder}/{fragment}.ts', [BroadcastController::class, 'fetchSegments'])->middleware('auth');
