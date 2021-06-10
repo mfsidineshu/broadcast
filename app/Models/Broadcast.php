@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $user_id
  * @property string $started_on
  * @property string $ended_on
- * @property User $user
+ * @property App\Models $user
  * @property BroadcastViewer[] $broadcastViewers
  */
 class Broadcast extends Model
@@ -33,7 +33,7 @@ class Broadcast extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\Models\User');
     }
 
     /**

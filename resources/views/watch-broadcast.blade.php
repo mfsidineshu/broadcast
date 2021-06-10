@@ -3,7 +3,12 @@
 @push('styles')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('assets/video-js.min.css') }}" />
-
+    <style>
+        div.author-info{
+            background: green;
+            color: white;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -16,7 +21,12 @@
         </video>
     </div>
 
-    <input type="hiiden" name="{{ $folder }}">
+    <div class="author-info">
+        <p>Broadcast started on : {{ $broadcast["started_on"] }}</p>
+        <h1>{{ $broadcast["user"]["name"] }}</h1>
+        <p>{{ $broadcast["user"]["email"] }}</p>
+    </div>
+    <input type="hidden" name="{{ $folder }}">
 
 @endsection
 

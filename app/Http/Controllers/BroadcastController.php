@@ -61,6 +61,9 @@ class BroadcastController extends Controller
             }
 
             $query = Broadcast::query();
+
+            $query->with(['user']);
+
             $query->where([
                 [ "broadcast_id", $this->folderName ]
             ])->first();
@@ -73,7 +76,7 @@ class BroadcastController extends Controller
                 return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[2]");
             }
 
-            return view('watch-broadcast')->with('folder', $folder);
+            return view('watch-broadcast',compact("folder","broadcast"));
 
 
         } catch (Exception $e) {
