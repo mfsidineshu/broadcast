@@ -39,13 +39,13 @@ class BroadcastViewersController extends Controller
 
             $existingBroadcastViewer = BroadcastViewer::where([
                 [ "broadcast_id", $folder ],
-                ["user_id" , "<>", Auth::id() ]
+                ["user_id" , Auth::id() ]
             ])->first();
 
-            if(!$existingBroadcastViewer || is_null($existingBroadcastViewer)){
+            if($existingBroadcastViewer){
                 $existingBroadcastViewer->last_viewed_on = date("Y-m-d H:i:s");
                 $existingBroadcastViewer->save();
-                $this->sendResponse( true ,"Viewing Status updated");
+                return $this->sendResponse( true ,"Viewing Status updated");
             }
 
             $newBroadcastViewer = new BroadcastViewer;
@@ -53,14 +53,26 @@ class BroadcastViewersController extends Controller
             $newBroadcastViewer->user_id = Auth::id();
             $newBroadcastViewer->joined_on = date('Y-m-d H:i:s');
             $newBroadcastViewer->last_viewed_on = date('Y-m-d H:i:s');
-            $existingBroadcastViewer->save();
-            $this->sendResponse( true ,"Viewing Status added");
+            $newBroadcastViewer->save();
+            return $this->sendResponse( true ,"Viewing Status added");
 
         }
         catch(Exception $e){
-
+            dd($e);
         }
 
 
+    }
+
+    public function sendResponse($status = false, $message = "There was an error", $data = [])
+    {
+
+        echo json_encode([
+            "status"  => $status,
+            "message" => $message,
+            "data"    => $data
+        ], true);
+
+        exit;
     }
 }

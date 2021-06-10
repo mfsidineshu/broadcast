@@ -26,7 +26,8 @@
         <h1>{{ $broadcast["user"]["name"] }}</h1>
         <p>{{ $broadcast["user"]["email"] }}</p>
     </div>
-    <input type="hidden" name="{{ $folder }}">
+    <input type="hidden" name="folder" value="{{ $folder }}">
+    {{ csrf_field() }}
 
 @endsection
 
@@ -36,17 +37,8 @@
     <script src="{{ asset('assets/videojs-http-streaming.min.js') }}"></script>
     <script src="{{ asset('assets/videojs-contrib-quality-levels.min.js') }}"></script>
     <script src="{{ asset('assets/videojs-hls-quality-selector.min.js') }}"></script>
-
-    <script>
-
-
-        var player = videojs('broadcastedVideo');
-        // player.play();
-        player.hlsQualitySelector({
-            displayCurrentQuality: true,
-        });
+    <script src="{{ asset('assets/watch-broadcast.js') }}"></script>
 
 
-    </script>
 
 @endpush

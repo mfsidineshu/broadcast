@@ -20,6 +20,9 @@ class BroadcastViewer extends Model
      */
     protected $fillable = ['broadcast_id', 'user_id', 'joined_on', 'last_viewed_on'];
 
+    public $timestamps = false;
+
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
