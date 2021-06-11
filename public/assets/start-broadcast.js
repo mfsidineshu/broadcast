@@ -1,5 +1,7 @@
 class Broadcast {
   constructor() {
+
+
     this.broadcastStart = document.getElementById("start");
     this.broadcastStop = document.getElementById("stop");
 
@@ -17,6 +19,7 @@ class Broadcast {
     this.shareOverlay =  document.querySelector("div.shareOverlay");
     this.closeShareOverlay =  document.querySelector("div.closeShare");
 
+    this.streamReference = null;
 
   }
 
@@ -33,7 +36,24 @@ class Broadcast {
         this.recorder.stop();
         this.broadcastInfo.style.display = "none";
         this.broadcastStart.style.display = "inline";
-        this.video.src = this.video.srcObject = null;
+        this.video.srcObject = null;
+
+        this.stopBroadcast().then(data =>{
+
+        });
+
+        if(!this.streamReference) return;
+
+        this.streamReference.getAudioTracks().forEach(function(track) {
+            track.stop();
+        });
+
+        this.streamReference.getVideoTracks().forEach(function(track) {
+            track.stop();
+        });
+
+        this.streamReference = null;
+
     }
 
     this.shareBroadcast.onclick = (e) => {
@@ -65,6 +85,7 @@ class Broadcast {
         video: true,
       })
       .then((camera) => {
+        this.streamReference = camera;
         this.startRecording(camera);
       })
       .catch(function (error) {
@@ -133,8 +154,6 @@ class Broadcast {
 
   async makeApiRequest(uint8View) {
 
-
-
     const response = await fetch("/save-chunks", {
       method: "POST",
       headers : {
@@ -151,6 +170,17 @@ class Broadcast {
     return data;
 
 
+  }
+
+  async stopBroadcast() {
+    const response = await fetch("/delete-broadcast/" + this.folder, {
+      method: "DELETE",
+      headers : {
+        'X-CSRF-TOKEN' : document.querySelector("input[name='_token']").value
+      }
+    });
+    const data = await response.json();
+    return data;
   }
 
   copyToClipboard(str) {

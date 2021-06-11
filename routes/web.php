@@ -33,3 +33,5 @@ Route::get('stream-broadcast/{folder}/{bitRate}.m3u8', [BroadcastController::cla
 Route::get('stream-broadcast/{folder}/{fragment}.ts', [BroadcastController::class, 'fetchSegments'])->middleware('auth');
 
 Route::post('viewing-status', [BroadcastViewersController::class, 'addOrUpdateBroadViewingStatus'])->middleware('auth');
+
+Route::delete('delete-broadcast/{folder}', [BroadcastController::class, 'endBroadcast'])->middleware('auth');

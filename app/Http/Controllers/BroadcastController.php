@@ -224,7 +224,7 @@ class BroadcastController extends Controller
         $destinationFullPath = storage_path('app/'.$this->liveFilePath);
         $hlsDirectoryFullPath = storage_path('app/'.$this->hlsChunkFilesPath);
 
-        $cmd = "ffmpeg -stream_loop -10 -hide_banner -nostdin -y -i {$destinationFullPath}  -vf scale=w=640:h=360:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4  -hls_playlist_type event -b:v 800k -maxrate 856k -bufsize 1200k -b:a 96k -hls_segment_filename {$hlsDirectoryFullPath}/360p_%03d.ts {$hlsDirectoryFullPath}/360p.m3u8  -vf scale=w=842:h=480:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4 -hls_playlist_type event -b:v 1400k -maxrate 1498k -bufsize 2100k -b:a 128k -hls_segment_filename {$hlsDirectoryFullPath}/480p_%03d.ts {$hlsDirectoryFullPath}/480p.m3u8  -vf scale=w=1280:h=720:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4 -hls_playlist_type event -b:v 2800k -maxrate 2996k -bufsize 4200k -b:a 128k -hls_segment_filename {$hlsDirectoryFullPath}/720p_%03d.ts {$hlsDirectoryFullPath}/720p.m3u8 -vf scale=w=1920:h=1080:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4 -hls_playlist_type event -b:v 5000k -maxrate 5350k -bufsize 7500k -b:a 192k -hls_segment_filename {$hlsDirectoryFullPath}/1080p_%03d.ts {$hlsDirectoryFullPath}/1080p.m3u8 ";
+        $cmd = "ffmpeg -stream_loop -3 -hide_banner -nostdin -y -i {$destinationFullPath}  -vf scale=w=640:h=360:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4  -hls_playlist_type event -b:v 800k -maxrate 856k -bufsize 1200k -b:a 96k -hls_segment_filename {$hlsDirectoryFullPath}/360p_%03d.ts {$hlsDirectoryFullPath}/360p.m3u8  -vf scale=w=842:h=480:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4 -hls_playlist_type event -b:v 1400k -maxrate 1498k -bufsize 2100k -b:a 128k -hls_segment_filename {$hlsDirectoryFullPath}/480p_%03d.ts {$hlsDirectoryFullPath}/480p.m3u8  -vf scale=w=1280:h=720:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4 -hls_playlist_type event -b:v 2800k -maxrate 2996k -bufsize 4200k -b:a 128k -hls_segment_filename {$hlsDirectoryFullPath}/720p_%03d.ts {$hlsDirectoryFullPath}/720p.m3u8 -vf scale=w=1920:h=1080:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4 -hls_playlist_type event -b:v 5000k -maxrate 5350k -bufsize 7500k -b:a 192k -hls_segment_filename {$hlsDirectoryFullPath}/1080p_%03d.ts {$hlsDirectoryFullPath}/1080p.m3u8 ";
 
 
         $this->runCom($cmd);
@@ -336,6 +336,45 @@ class BroadcastController extends Controller
             // dd($e);
             return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[3]");
         }
+    }
+
+    public function endBroadcast(Request $request , $folder){
+
+        try {
+
+            $req = [
+                "enc-folder" => $folder ,
+                "dec"  => Crypt::decrypt($folder)
+
+            ];
+
+            $this->folderName = $req["dec"];
+
+            $query = Broadcast::query();
+
+            $query->where([
+                [ "broadcast_id", $this->folderName ],
+                ["user_id" , Auth::id() ]
+            ])->first();
+
+            $query->whereNull('ended_on');
+
+            $broadcast = $query->first();
+
+            if(!$broadcast || is_null($broadcast)){
+                return $this->sendResponse(false,"Invalid request [13]");
+            }
+
+            $broadcast->ended_on = date("Y-m-d H:i:s");
+            $broadcast->save();
+            return $this->sendResponse(true, "Broadcast ended");
+
+
+        } catch (Exception $e) {
+            // var_dump($e);
+            $this->sendResponse(false,"Invalid request [16]");
+        }
+
     }
 
     public function sendResponse($status = false, $message = "There was an error", $data = [])
