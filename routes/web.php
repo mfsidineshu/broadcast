@@ -24,7 +24,7 @@ Route::post('post-registration', [AuthController::class, 'postRegistration'])->n
 
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('dashboard', [AuthController::class, 'dashboard'])->middleware('auth');
+Route::get('dashboard', [AuthController::class, 'dashboard'])->middleware('auth')->name('dashboard');
 Route::get('start-broadcast', [BroadcastController::class, 'broadcastPage'])->middleware('auth');
 Route::post('save-chunks', [BroadcastController::class, 'saveStreamToAFile'])->middleware('auth');
 
@@ -33,5 +33,6 @@ Route::get('stream-broadcast/{folder}/{bitRate}.m3u8', [BroadcastController::cla
 Route::get('stream-broadcast/{folder}/{fragment}.ts', [BroadcastController::class, 'fetchSegments'])->middleware('auth');
 
 Route::post('viewing-status', [BroadcastViewersController::class, 'addOrUpdateBroadViewingStatus'])->middleware('auth');
+Route::get('broadcast-viewers', [ BroadcastViewersController::class, 'broadcastViewers'])->middleware('auth');
 
 Route::delete('delete-broadcast/{folder}', [BroadcastController::class, 'endBroadcast'])->middleware('auth');

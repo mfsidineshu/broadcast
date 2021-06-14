@@ -58,7 +58,7 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light navbar-laravel">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-laravel" style="z-index: 5000;">
         <div class="container">
             <a class="navbar-brand" href="#">Broadcast Application</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -76,6 +76,9 @@
                             <a class="nav-link" href="{{ route('register') }}">Register</a>
                         </li>
                     @else
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('logout') }}">Logout</a>
                         </li>

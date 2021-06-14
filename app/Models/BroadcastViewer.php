@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $joined_on
  * @property string $last_viewed_on
  * @property Broadcast $broadcast
- * @property User $user
+ * @property App\Models $user
  */
 class BroadcastViewer extends Model
 {
@@ -36,6 +36,6 @@ class BroadcastViewer extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\Models\User');
     }
 }

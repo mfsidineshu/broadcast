@@ -37,7 +37,7 @@ class Broadcast {
         this.broadcastInfo.style.display = "none";
         this.broadcastStart.style.display = "inline";
         this.video.srcObject = null;
-
+        this.folder = null;
         this.stopBroadcast().then(data =>{
 
         });
@@ -112,39 +112,23 @@ class Broadcast {
           let uint8View = new Uint8Array(arrayBuffer);
           this.makeApiRequest(uint8View).then(data =>{
 
-            this.folder = data["data"]["folder"];
+            if(this.folder == null ){
+                this.folder = data["data"]["folder"];
+                this.broadcastLink.value =  this.broadcastLink.getAttribute("data-server-addr") + '/' +this.folder;
+
+            }
+
+
+            // if(this.order == 0){
+
+            // }
             // this.broadcastLink.setAttribute("href","./view-broadcast.php?folder="+this.folder);
-            this.broadcastLink.value =  this.broadcastLink.getAttribute("data-server-addr") + '/' +this.folder;
 
           });
           this.order += 1;
         };
     };
 
-    // this.recorder = RecordRTC(camera, {
-    //   recorderType: MediaStreamRecorder,
-    //   mimeType: "video/webm",
-    //   timeSlice: 1000,
-
-    //   ondataavailable: (blob) => {
-    //     var reader = new FileReader();
-    //     reader.readAsArrayBuffer(blob);
-    //     reader.onloadend = async (event) => {
-    //       let arrayBuffer = reader.result;
-    //       let uint8View = new Uint8Array(arrayBuffer);
-    //       this.makeApiRequest(uint8View).then(data =>{
-
-    //         this.folder = data["data"]["folder"];
-    //         this.broadcastLink.setAttribute("href","./view-broadcast.php?folder="+this.folder);
-
-
-    //       });
-    //       this.order += 1;
-    //     };
-    //   },
-
-
-    // });
 
     // this.recorder.startRecording();
     this.recorder.start(1000);
