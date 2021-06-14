@@ -4,11 +4,11 @@ class WatchBroadcast{
 
         this.player = videojs('broadcastedVideo');
 
-        this.player.on('ready', ()=>{
-            if(this.player.muted()){
-                this.player.muted(false);
-            }
-        });
+        // this.player.on('ready', ()=>{
+        //     if(this.player.muted()){
+        //         this.player.muted(false);
+        //     }
+        // });
 
         this.player.hlsQualitySelector({
             displayCurrentQuality: true,
