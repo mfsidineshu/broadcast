@@ -3,31 +3,69 @@
 @push('styles')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('assets/video-js.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/broadcast-viewers.css') }}" />
+
     <style>
-        div.author-info{
-            background: green;
-            color: white;
+
+        div.video-wr {
+            max-height: 600px !important;
+            width: 90% !important;
+            margin: 1em auto 1em auto;
+            overflow: hidden;
+            overflow-y: scroll;
+
         }
+
+        /* video{
+            max-height: 600px !important;
+        }
+
+        .video-js{
+            position: unset !important;
+
+        } */
+
+        video{
+            max-height: 600px !important;
+        }
+
+
     </style>
 @endpush
 
 @section('content')
 
-    <div class="video-container">
-        <video id="broadcastedVideo" class="video-js vjs-fluid vjs-16-9"  controls preload="auto"
-            data-setup="{}">
-            <source type="application/x-mpegURL" src="/stream-broadcast/{{ $folder }}/master.m3u8">
+    <div class="video-wr">
+        <div class="video-container">
+            <video  id="broadcastedVideo" class="video-js vjs-fill vjs-16-9 vjs-4-3" controls preload="auto">
+                <source type="application/x-mpegURL" src="/stream-broadcast/{{ $folder }}/master.m3u8">
 
-        </video>
+            </video>
+        </div>
     </div>
+    <div class="" style="margin : 1em auto 1em auto;">
 
-    <div class="author-info">
-        <p>Broadcast started on : {{ $broadcast["started_on"] }}</p>
-        <h1>{{ $broadcast["user"]["name"] }}</h1>
-        <p>{{ $broadcast["user"]["email"] }}</p>
+        <div class="">
+            <ul class="list-group ">
+                <li class="list-group-item">Broadcast started on : {{ $broadcast['started_on'] }}</li>
+                <li class="list-group-item">{{ $broadcast['user']['name'] }}</li>
+                <li class="list-group-item">{{ $broadcast['user']['email'] }}</li>
+                <li class="list-group-item">
+
+                    <button class="btn btn-primary mr-1 open-broadcast-viewers" role="button"> <i class="fa fa-eye"
+                            aria-hidden="true"></i> Viewers : <span class="viewers-count-indicator"></span></button>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+
     </div>
     <input type="hidden" name="folder" value="{{ $folder }}">
     {{ csrf_field() }}
+    @include('broadcast-viewers')
 
 @endsection
 
@@ -38,6 +76,7 @@
     <script src="{{ asset('assets/videojs-contrib-quality-levels.min.js') }}"></script>
     <script src="{{ asset('assets/videojs-hls-quality-selector.min.js') }}"></script>
     <script src="{{ asset('assets/watch-broadcast.js') }}"></script>
+    <script src="{{ asset('assets/broadcast-viewers.js') }}"></script>
 
 
 

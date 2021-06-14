@@ -111,8 +111,8 @@ class BroadcastViewersController extends Controller
             if($broadcastViewers){
                 foreach($broadcastViewers as $broadcastViewer){
                     $viewers[] = [
-                        $broadcastViewer["user"]["name"] ,
-                        $broadcastViewer["user"]["email"]
+                       "name" => $broadcastViewer["user"]["name"] ,
+                        "email" => $broadcastViewer["user"]["email"]
                     ];
                 }
             }

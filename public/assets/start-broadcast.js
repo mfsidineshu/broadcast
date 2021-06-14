@@ -21,6 +21,8 @@ class Broadcast {
 
     this.streamReference = null;
 
+    this.folderInput = document.querySelector("input[name='folder']");
+
   }
 
   init() {
@@ -37,9 +39,10 @@ class Broadcast {
         this.broadcastInfo.style.display = "none";
         this.broadcastStart.style.display = "inline";
         this.video.srcObject = null;
-        this.folder = null;
-        this.stopBroadcast().then(data =>{
 
+        this.stopBroadcast().then(data =>{
+            this.folder = null;
+            this.folderInput.value="";
         });
 
         if(!this.streamReference) return;
@@ -114,6 +117,7 @@ class Broadcast {
 
             if(this.folder == null ){
                 this.folder = data["data"]["folder"];
+                this.folderInput.value = data["data"]["folder"] && data["data"]["folder"]!=undefined ? this.folder : '';
                 this.broadcastLink.value =  this.broadcastLink.getAttribute("data-server-addr") + '/' +this.folder;
 
             }

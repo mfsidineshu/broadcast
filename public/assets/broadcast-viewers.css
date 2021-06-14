@@ -1,0 +1,14 @@
+div.broadcast-viewers{
+    position: fixed;
+    right: 20px;
+    height: 0;
+    top: 100px;
+    overflow: auto;
+    width: 400px;
+    background-color: black;
+    text-align: left;
+}
+
+div.broadcast-viewers.active{
+    height: 300px;
+}
