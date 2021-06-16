@@ -25,6 +25,12 @@ Route::post('post-registration', [AuthController::class, 'postRegistration'])->n
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('dashboard', [AuthController::class, 'dashboard'])->middleware('auth')->name('dashboard');
+Route::get('on-going-broadcasts', [BroadcastController::class, 'onGoingBroadcasts'])->middleware('auth')->name('on-going-broadcasts');
+Route::get('my-broadcast-videos', [BroadcastController::class, 'myBroadcastVideos'])->middleware('auth')->name('my-broadcast-videos');
+
+Route::get('download-broadcast-video/{folder}', [BroadcastController::class, 'downloadBroadcastVideo'])->middleware('auth')->name('download-broadcast-video');
+
+
 Route::get('start-broadcast', [BroadcastController::class, 'broadcastPage'])->middleware('auth');
 Route::post('save-chunks', [BroadcastController::class, 'saveStreamToAFile'])->middleware('auth');
 

@@ -8,16 +8,18 @@
                     <div class="card-header">{{ __('Dashboard') }}</div>
 
                     <div class="card-body">
-                        <a class="btn btn-primary" href="/start-broadcast" role="button">Start Broadcast</a>
+                        <a class="btn btn-primary" href="/start-broadcast" role="button"> <i class="fa fa-play" aria-hidden="true"></i> Start Broadcast</a>
+                        <a class="btn btn-primary" href="/on-going-broadcasts" role="button"><i class="fa fa-television" aria-hidden="true"></i>   On Going Broadcasts</a>
+                        <a class="btn btn-primary" href="/my-broadcast-videos" role="button"><i class="fa fa-video-camera" aria-hidden="true"></i>   My Broadcast Videos</a>
+
                     </div>
-                    @if (session('success'))
+                    {{-- @if (session('success'))
                         <div class="card-body">
                             <div class="alert alert-success" role="alert">
                                 {{ session('success') }}
                             </div>
                         </div>
-
-                    @endif
+                    @endif --}}
 
 
                     @if (session('danger'))

@@ -37,6 +37,79 @@ class BroadcastController extends Controller
 
     }
 
+    public function onGoingBroadcasts(){
+
+        $query = Broadcast::query();
+        $query->with(['user']);
+        $query->whereNull('ended_on');
+        $query->orderBy('started_on','DESC');
+        $broadcasts = $query->get();
+
+        return view('ongoing-broadcasts',compact("broadcasts"));
+
+        // $query->whereNull('ended_on');
+    }
+
+    public function myBroadcastVideos(){
+
+        $query = Broadcast::query();
+        $query->where("user_id", Auth::id()) ;
+        $query->whereNotNull('ended_on');
+        $query->orderBy('ended_on','DESC');
+        $broadcasts = $query->get();
+
+        return view('my-previous-broadcasts',compact("broadcasts"));
+
+        // $query->whereNull('ended_on');
+    }
+
+    public function downloadBroadcastVideo( $folder ){
+
+        try {
+
+
+            $req = [
+                "enc-folder" => $folder ,
+                "dec"  => Crypt::decrypt($folder)
+
+            ];
+
+            $this->folderName = $req["dec"];
+
+            $this->setUpDirStructure();
+
+            $query = Broadcast::query();
+
+            $query->where([
+                [ "broadcast_id", $this->folderName ],
+                ["user_id" , Auth::id() ]
+            ])->first();
+
+            $query->whereNotNull('ended_on');
+
+            $broadcast = $query->first();
+
+            if(!$broadcast || is_null($broadcast)){
+                $this->sendResponse(false,"Invalid request [13]");
+            }
+
+
+            if(Storage::exists( $this->liveFilePath)){
+                return Storage::download( $this->liveFilePath , "{$broadcast['started_on']}_to_{$broadcast['ended_on']}.webm" );
+            }
+
+
+            return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[2]");
+
+
+
+        } catch (Exception $e) {
+            // dd($e);
+            return redirect("dashboard")->with('danger', "Requested Broadcast doesn't exist[3]");
+        }
+
+    }
+
     public function watchBroadcastPage(Request $request , $folder){
 
         try {

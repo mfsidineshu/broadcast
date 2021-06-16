@@ -60,7 +60,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-light navbar-laravel" style="z-index: 5000;">
         <div class="container">
-            <a class="navbar-brand" href="#">Broadcast Application</a>
+            <a class="navbar-brand" href="/">Broadcast Application</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
