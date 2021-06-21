@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Broadcast;
-use App\BroadcastViewer;
+use App\Models\Broadcast;
+use App\Models\BroadcastViewer;
 use DateTime;
 use Exception;
 use Illuminate\Support\Facades\Auth;
