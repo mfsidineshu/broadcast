@@ -41,6 +41,8 @@ $app->singleton(
     App\Exceptions\Handler::class
 );
 
+// $app->register(\Nuwave\Lighthouse\LighthouseServiceProvider::class);
+
 /*
 |--------------------------------------------------------------------------
 | Return The Application

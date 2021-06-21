@@ -1,0 +1,32 @@
+type Query {
+  hello: String!
+}
+
+type Query {
+  greet(name: String!): String
+}
+
+type Query {
+  users: [User!]! @all
+}
+
+type Query {
+  users: [User!]! @paginate
+}
+
+type Query {
+  user(id: ID! @eq): User @find
+}
+
+type User {
+  id: ID!
+  name: String!
+}
+
+type Mutation {
+  createUser(name: String!, email: String! , password : String!): User! @create
+}
+
+type Mutation {
+  updateUser(id: ID!, name: String): User @update
+}
